@@ -272,7 +272,10 @@ export class SystemAppLauncherSettingTab extends PluginSettingTab {
 		const content = containerEl.createDiv({ cls: "sal-settings-content" });
 
 		if (this.activeTab === "readme") {
-			renderReadmePanel(this.app, content, this.readmeComponent, "sal-readme-panel");
+			const pluginDir =
+				this.plugin.manifest.dir ??
+				`${this.app.vault.configDir}/plugins/${this.plugin.manifest.id}`;
+			renderReadmePanel(this.app, content, this.readmeComponent, "sal-readme-panel", pluginDir);
 			return;
 		}
 

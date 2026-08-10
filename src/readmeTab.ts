@@ -1,15 +1,23 @@
 import { App, Component, MarkdownRenderer } from "obsidian";
-import { readFileSync } from "fs";
-import { join } from "path";
 
 export type PluginSettingsTabId = "settings" | "readme";
 
-export function loadPluginReadme(): string {
+const README_FALLBACK =
+	"# README not found\n\nCould not load README.md from the plugin folder.";
+
+export async function loadPluginReadme(
+	pluginDir: string,
+	adapter: App["vault"]["adapter"],
+): Promise<string> {
+	const readmePath = `${pluginDir}/README.md`;
 	try {
-		return readFileSync(join(__dirname, "README.md"), "utf-8");
+		if (await adapter.exists(readmePath)) {
+			return await adapter.read(readmePath);
+		}
 	} catch {
-		return "# README not found\n\nCould not load README.md from the plugin folder.";
+		// fall through to fallback
 	}
+	return README_FALLBACK;
 }
 
 export function renderSettingsTabBar(
@@ -42,9 +50,11 @@ export function renderReadmePanel(
 	container: HTMLElement,
 	component: Component,
 	panelClass: string,
+	pluginDir: string,
 ): void {
 	container.empty();
 	container.addClass(panelClass);
-	const markdown = loadPluginReadme();
-	void MarkdownRenderer.render(app, markdown, container, "", component);
+	void loadPluginReadme(pluginDir, app.vault.adapter).then((markdown) =>
+		MarkdownRenderer.render(app, markdown, container, "", component),
+	);
 }

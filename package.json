@@ -1,6 +1,6 @@
 {
 	"name": "system-app-launcher",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Launch Linux desktop apps and shell commands via Obsidian commands for the Buttons plugin.",
 	"main": "main.js",
 	"type": "module",

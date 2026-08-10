@@ -1,0 +1,19 @@
+{
+	"name": "system-app-launcher",
+	"version": "1.0.1",
+	"description": "Launch Linux desktop apps and shell commands via Obsidian commands for the Buttons plugin.",
+	"main": "main.js",
+	"type": "module",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production"
+	},
+	"keywords": ["obsidian", "plugin", "linux", "launcher"],
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^22.15.17",
+		"esbuild": "0.25.5",
+		"obsidian": "latest",
+		"typescript": "^5.8.3"
+	}
+}

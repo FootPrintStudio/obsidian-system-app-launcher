@@ -1,0 +1,117 @@
+.sal-entry {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	padding: 0.6rem 0;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.sal-entry-main {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.sal-entry-header {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.sal-kind-badge {
+	font-size: 0.7rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 0.1rem 0.4rem;
+	border-radius: 4px;
+	background: var(--background-modifier-hover);
+	color: var(--text-muted);
+}
+
+.sal-kind-badge.desktop {
+	color: var(--text-accent);
+}
+
+.sal-kind-badge.shell {
+	color: var(--text-warning);
+}
+
+.sal-entry-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	flex-shrink: 0;
+}
+
+.sal-command-preview {
+	font-family: var(--font-monospace);
+	font-size: 0.8rem;
+	color: var(--text-muted);
+	word-break: break-all;
+}
+
+.sal-empty {
+	color: var(--text-muted);
+	font-style: italic;
+	padding: 0.5rem 0 1rem;
+}
+
+.sal-modal-search {
+	margin-bottom: 0.75rem;
+}
+
+.sal-modal-list {
+	max-height: 50vh;
+	overflow-y: auto;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+}
+
+.sal-modal-row {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.45rem 0.65rem;
+	border-bottom: 1px solid var(--background-modifier-border);
+	cursor: pointer;
+}
+
+.sal-modal-row:last-child {
+	border-bottom: none;
+}
+
+.sal-modal-row:hover {
+	background: var(--background-modifier-hover);
+}
+
+.sal-modal-row.selected {
+	background: var(--background-modifier-active-hover);
+}
+
+.sal-modal-row-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.sal-modal-row-name {
+	font-weight: 500;
+}
+
+.sal-modal-row-id {
+	font-family: var(--font-monospace);
+	font-size: 0.75rem;
+	color: var(--text-muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.sal-modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	margin-top: 0.75rem;
+}

@@ -1,0 +1,9 @@
+{
+	"id": "system-app-launcher",
+	"name": "System App Launcher",
+	"version": "1.0.1",
+	"minAppVersion": "1.5.0",
+	"description": "Launch Linux desktop apps and shell commands via Obsidian commands — designed for use with the Buttons plugin.",
+	"author": "Command Centre",
+	"isDesktopOnly": true
+}

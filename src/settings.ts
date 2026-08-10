@@ -1,6 +1,7 @@
-import { App, Modal, Notice, PluginSettingTab, Setting, TextComponent } from "obsidian";
+import { App, Component, Modal, Notice, PluginSettingTab, Setting, TextComponent } from "obsidian";
 import type SystemAppLauncherPlugin from "./main";
 import { scanDesktopApps } from "./desktop";
+import { renderReadmePanel, renderSettingsTabBar, type PluginSettingsTabId } from "./readmeTab";
 import type {
 	DesktopAppInfo,
 	DesktopLauncherEntry,
@@ -242,17 +243,43 @@ export class SystemAppLauncherSettingTab extends PluginSettingTab {
 	plugin: SystemAppLauncherPlugin;
 	private cachedApps: DesktopAppInfo[] | null = null;
 	private entriesContainer: HTMLElement | null = null;
+	private activeTab: PluginSettingsTabId = "settings";
+	private readmeComponent = new Component();
 
 	constructor(app: App, plugin: SystemAppLauncherPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
 
+	hide(): void {
+		this.readmeComponent.unload();
+	}
+
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
+		this.readmeComponent.unload();
+		this.readmeComponent = new Component();
 
 		containerEl.createEl("h2", { text: "System App Launcher" });
+
+		const tabBar = containerEl.createDiv();
+		renderSettingsTabBar(tabBar, this.activeTab, (tab) => {
+			this.activeTab = tab;
+			this.display();
+		}, "sal");
+
+		const content = containerEl.createDiv({ cls: "sal-settings-content" });
+
+		if (this.activeTab === "readme") {
+			renderReadmePanel(this.app, content, this.readmeComponent, "sal-readme-panel");
+			return;
+		}
+
+		this.displaySettings(content);
+	}
+
+	private displaySettings(containerEl: HTMLElement): void {
 		containerEl.createEl("p", {
 			text: "Each enabled entry becomes an Obsidian command that the Buttons plugin can run with type command. Copy the Buttons action preview exactly into your button blocks.",
 		});

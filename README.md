@@ -40,6 +40,16 @@ npm install && npm run build
 
 Then enable **System App Launcher** under Community plugins and reload Obsidian.
 
+### BRAT (beta install)
+
+Not in the Obsidian Community Plugins catalog. Install via [BRAT](https://github.com/TfTHacker/obsidian42-brat):
+
+1. Enable **BRAT** in Community Plugins.
+2. **Add Beta plugin** → `FootPrintStudio/obsidian-system-app-launcher`
+3. Install or update from BRAT when [releases](https://github.com/FootPrintStudio/obsidian-system-app-launcher/releases) are published.
+
+BRAT requires a GitHub Release with `main.js`, `manifest.json`, `styles.css`, and `versions.json` attached.
+
 ## Setup
 
 1. Enable **System App Launcher** under Community plugins (reload Obsidian if needed).

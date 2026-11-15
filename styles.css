@@ -39,6 +39,46 @@
 	color: var(--text-warning);
 }
 
+.sal-kind-badge.seed {
+	color: var(--text-muted);
+	border: 1px dashed var(--background-modifier-border);
+	background: transparent;
+}
+
+.sal-entry-seed {
+	background: var(--background-secondary);
+	border-radius: 6px;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+	margin: 0.25rem 0;
+}
+
+.sal-seed-hint {
+	font-size: 0.8rem;
+	color: var(--text-muted);
+}
+
+.sal-seed-callout {
+	margin: 0.75rem 0 1.25rem;
+	padding: 0.75rem 0.9rem;
+	border: 1px solid var(--background-modifier-border);
+	border-left: 3px solid var(--interactive-accent);
+	border-radius: 6px;
+	background: var(--background-secondary);
+}
+
+.sal-seed-callout-title {
+	font-weight: 600;
+	margin-bottom: 0.35rem;
+}
+
+.sal-seed-callout-body,
+.sal-seed-callout-hint {
+	font-size: 0.85rem;
+	color: var(--text-muted);
+	margin: 0.35rem 0;
+}
+
 .sal-entry-actions {
 	display: flex;
 	align-items: center;

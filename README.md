@@ -24,8 +24,31 @@ Buttons matches commands by **display name** (case-insensitive), not by command 
 
 - **Desktop apps:** browse XDG `.desktop` entries (`~/.local/share/applications`, `/usr/share/applications`, Flatpak exports, etc.).
 - **Custom shell:** free-form commands for apps without a desktop file or that need special flags.
+- **CollectionXiewer opt-in seed:** a disabled launcher template is offered once (not forced). Enable it only when you use CollectionXiewer.
 - Launch order for desktop entries: Exec line → `gtk-launch` → `gio launch` (all detached; AppImage env cleaned).
 - Processes are detached so Obsidian is not blocked by the launched app.
+
+## CollectionXiewer template (opt-in)
+
+Decision C for the FootPrintStudio stack: the seed is **available**, not mandatory.
+
+1. On first load after install/upgrade, if you do not already have a CollectionXiewer launcher, the plugin inserts a **disabled** entry (`seed-collectionxiewer`).
+2. Prefer a matching `.desktop` file (`com.collectionxiewer.app` / name match). Otherwise a shell template searches `~/Applications`, `~/Downloads`, `~/bin`, and `~/.local/bin` for `CollectionXiewer*.AppImage`.
+3. Flip **Enabled** when you use CollectionXiewer — only then does a Command Palette / Buttons command appear.
+4. Removing the entry does **not** re-seed automatically. Use **Add CollectionXiewer template** in Settings if you want it back.
+5. Edit the path/command if your AppImage lives elsewhere.
+
+Buttons snippet (after enabling; copy the live preview from Settings if your prefix differs):
+
+```button
+name Open CollectionXiewer
+type command
+action System App Launcher: Launch App: CollectionXiewer
+color blue
+```
+^button-collectionxiewer
+
+CollectionXiewer is **not** a hard dependency of this plugin.
 
 ## Install
 
@@ -54,7 +77,7 @@ BRAT requires a GitHub Release with `main.js`, `manifest.json`, `styles.css`, an
 
 1. Enable **System App Launcher** under Community plugins (reload Obsidian if needed).
 2. Open **Settings → System App Launcher**.
-3. Click **Add from desktop apps…** and/or **Add custom shell…**.
+3. Optionally enable the **CollectionXiewer** opt-in seed (starts disabled), and/or **Add from desktop apps…** / **Add custom shell…**.
 4. Copy the `Buttons action:` preview text into a Buttons `action` field.
 
 ## Develop / rebuild

@@ -20,11 +20,17 @@ export type LauncherEntry = DesktopLauncherEntry | ShellLauncherEntry;
 export interface PluginSettings {
 	commandNamePrefix: string;
 	entries: LauncherEntry[];
+	/**
+	 * Once true, we will not auto-insert the CollectionXiewer opt-in seed again
+	 * (even if the user removes it). Re-add via Settings.
+	 */
+	collectionXiewerSeedApplied: boolean;
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
 	commandNamePrefix: "Launch App: ",
 	entries: [],
+	collectionXiewerSeedApplied: false,
 };
 
 export interface DesktopAppInfo {

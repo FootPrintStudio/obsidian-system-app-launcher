@@ -8,6 +8,7 @@ import {
 	type PluginSettings,
 	type ShellLauncherEntry,
 } from "./types";
+import { applyCollectionXiewerSeedOnce } from "./xiewerTemplate";
 
 function newEntryId(): string {
 	return `entry-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -49,6 +50,7 @@ export default class SystemAppLauncherPlugin extends Plugin {
 	settings: PluginSettings = {
 		commandNamePrefix: DEFAULT_SETTINGS.commandNamePrefix,
 		entries: [],
+		collectionXiewerSeedApplied: false,
 	};
 	private registeredCommandIds: string[] = [];
 
@@ -74,7 +76,7 @@ export default class SystemAppLauncherPlugin extends Plugin {
 				? data.commandNamePrefix
 				: DEFAULT_SETTINGS.commandNamePrefix;
 
-		const entries: LauncherEntry[] = [];
+		let entries: LauncherEntry[] = [];
 		if (Array.isArray(data?.entries)) {
 			for (const raw of data.entries) {
 				const entry = sanitizeEntry(raw);
@@ -82,14 +84,40 @@ export default class SystemAppLauncherPlugin extends Plugin {
 			}
 		}
 
+		let collectionXiewerSeedApplied = data?.collectionXiewerSeedApplied === true;
+
+		// Decision C: opt-in seed once — disabled until the user enables it.
+		if (!collectionXiewerSeedApplied) {
+			const result = applyCollectionXiewerSeedOnce(entries);
+			entries = result.entries;
+			collectionXiewerSeedApplied = true;
+		}
+
 		this.settings = {
 			commandNamePrefix: prefix,
 			entries,
+			collectionXiewerSeedApplied,
 		};
+
+		// Persist seed flag (+ new disabled entry) so upgrades do not re-seed after removal.
+		if (data?.collectionXiewerSeedApplied !== true) {
+			await this.saveSettings();
+		}
 	}
 
 	async saveSettings(): Promise<void> {
 		await this.saveData(this.settings);
+	}
+
+	/** Re-insert the disabled CollectionXiewer template if the user removed it. */
+	async reseedCollectionXiewerTemplate(): Promise<boolean> {
+		const result = applyCollectionXiewerSeedOnce(this.settings.entries);
+		if (!result.seeded) return false;
+		this.settings.entries = result.entries;
+		this.settings.collectionXiewerSeedApplied = true;
+		await this.saveSettings();
+		this.refreshCommands();
+		return true;
 	}
 
 	/** Local command name passed to addCommand (Obsidian prefixes the plugin name). */

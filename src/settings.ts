@@ -8,6 +8,11 @@ import type {
 	LauncherEntry,
 	ShellLauncherEntry,
 } from "./types";
+import {
+	COLLECTION_XIEWER_SEED_ID,
+	findSeedEntry,
+	hasCollectionXiewerEntry,
+} from "./xiewerTemplate";
 
 function newId(): string {
 	return `entry-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -287,6 +292,8 @@ export class SystemAppLauncherSettingTab extends PluginSettingTab {
 			text: "Each enabled entry becomes an Obsidian command that the Buttons plugin can run with type command. Copy the Buttons action preview exactly into your button blocks.",
 		});
 
+		this.renderCollectionXiewerSeedCallout(containerEl);
+
 		new Setting(containerEl)
 			.setName("Command name prefix")
 			.setDesc(
@@ -326,6 +333,55 @@ export class SystemAppLauncherSettingTab extends PluginSettingTab {
 		this.renderEntries();
 	}
 
+	private renderCollectionXiewerSeedCallout(containerEl: HTMLElement): void {
+		const box = containerEl.createDiv({ cls: "sal-seed-callout" });
+		box.createEl("div", {
+			cls: "sal-seed-callout-title",
+			text: "CollectionXiewer template (opt-in)",
+		});
+		box.createEl("p", {
+			cls: "sal-seed-callout-body",
+			text: "Optional seed for Carl’s stack — not required. A disabled CollectionXiewer launcher is offered once so you can open the media app from Buttons. Enable the toggle only when you use CollectionXiewer; edit the path/command if your AppImage lives elsewhere. Removing the entry does not force it back.",
+		});
+
+		const seed = findSeedEntry(this.plugin.settings.entries);
+		const hasXiewer = hasCollectionXiewerEntry(this.plugin.settings.entries);
+
+		if (seed && !seed.enabled) {
+			box.createEl("p", {
+				cls: "sal-seed-callout-hint",
+				text: "Seed is present and disabled — flip its Enabled toggle below when ready.",
+			});
+		} else if (seed && seed.enabled) {
+			const action = this.plugin.getButtonsActionName(seed);
+			box.createEl("p", {
+				cls: "sal-seed-callout-hint",
+				text: `Enabled. Buttons action: ${action}`,
+			});
+		} else if (!hasXiewer) {
+			box.createEl("p", {
+				cls: "sal-seed-callout-hint",
+				text: "No CollectionXiewer launcher in this vault. Re-add the disabled template if you want it.",
+			});
+			new Setting(box).addButton((btn) => {
+				btn.setButtonText("Add CollectionXiewer template").onClick(async () => {
+					const added = await this.plugin.reseedCollectionXiewerTemplate();
+					if (added) {
+						new Notice("Added disabled CollectionXiewer template.");
+						this.display();
+					} else {
+						new Notice("CollectionXiewer launcher already present.");
+					}
+				});
+			});
+		} else {
+			box.createEl("p", {
+				cls: "sal-seed-callout-hint",
+				text: "A CollectionXiewer launcher is already configured (manual or seed).",
+			});
+		}
+	}
+
 	private renderEntries(): void {
 		if (!this.entriesContainer) return;
 		const el = this.entriesContainer;
@@ -341,7 +397,10 @@ export class SystemAppLauncherSettingTab extends PluginSettingTab {
 		}
 
 		entries.forEach((entry, index) => {
-			const row = el.createDiv({ cls: "sal-entry" });
+			const isSeed = entry.id === COLLECTION_XIEWER_SEED_ID;
+			const row = el.createDiv({
+				cls: "sal-entry" + (isSeed ? " sal-entry-seed" : ""),
+			});
 			const main = row.createDiv({ cls: "sal-entry-main" });
 
 			const header = main.createDiv({ cls: "sal-entry-header" });
@@ -349,6 +408,12 @@ export class SystemAppLauncherSettingTab extends PluginSettingTab {
 				cls: `sal-kind-badge ${entry.kind}`,
 				text: entry.kind,
 			});
+			if (isSeed) {
+				header.createSpan({
+					cls: "sal-kind-badge seed",
+					text: entry.enabled ? "opt-in seed" : "opt-in · disabled",
+				});
+			}
 			header.createSpan({ text: entry.name });
 
 			const actionName = this.plugin.getButtonsActionName(entry);
@@ -356,6 +421,13 @@ export class SystemAppLauncherSettingTab extends PluginSettingTab {
 				cls: "sal-command-preview",
 				text: `Buttons action: ${actionName}`,
 			});
+
+			if (isSeed && !entry.enabled) {
+				main.createDiv({
+					cls: "sal-seed-hint",
+					text: "Enable when you use CollectionXiewer — no command is registered until then.",
+				});
+			}
 
 			if (entry.kind === "shell") {
 				main.createDiv({
@@ -375,11 +447,16 @@ export class SystemAppLauncherSettingTab extends PluginSettingTab {
 				.setClass("sal-inline-setting")
 				.addToggle((toggle) => {
 					toggle.setValue(entry.enabled);
-					toggle.setTooltip("Enabled as Obsidian command");
+					toggle.setTooltip(
+						isSeed
+							? "Enable when you use CollectionXiewer (registers the Obsidian command)"
+							: "Enabled as Obsidian command",
+					);
 					toggle.onChange(async (value) => {
 						entry.enabled = value;
 						await this.plugin.saveSettings();
 						this.plugin.refreshCommands();
+						this.display();
 					});
 				});
 
